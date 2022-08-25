@@ -7,7 +7,7 @@ celsius_q    = np.array([-40, -10,  0,  8, 15, 22,  38],  dtype=float)
 fahrenheit_a = np.array([-40,  14, 32, 46, 59, 72, 100],  dtype=float)
 
 # build the model 
-l0 = tf.keras.layers.Dense(
+l0 = tf.keras.layers.Dense( # dense layers are connected to every neuron in the previous layer
     units=1, # how many neurons (or internal tunable variables) in this layer
     input_shape=[1] # shape of the input, in this case a 1-dimensional array with one member
     )
