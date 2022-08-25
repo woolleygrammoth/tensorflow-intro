@@ -28,8 +28,9 @@ test_ds.map(normalize)
 
 # images are loaded from the disk when the dataset is first use. 
 # Caching them stores them in memory so that subsequent epochs can run without loading them again
-train_ds = train_ds.cache()
-test_ds = test_ds.cache()
+
+# train_ds = train_ds.cache()
+# test_ds = test_ds.cache()
 
 # exploration: plot 25 images along with their labels
 plt.figure(figsize=(10, 10))
@@ -42,3 +43,4 @@ for i, (image, label) in enumerate(test_ds.take(25)):
     plt.imshow(image, cmap=plt.cm.binary)
     plt.xlabel(class_names[label])
 plt.show()
+
