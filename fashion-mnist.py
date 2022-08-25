@@ -12,10 +12,15 @@ import logging # explore logging more later
 logger = tf.get_logger()
 logger.setLevel(logging.ERROR)
 
-dataset, metadata = tfds.load('fashion_mnist', as_supervised=True, with_info=True) # obtain dataset of interest
-train_ds, test_ds = dataset['train'], dataset['test'] # split into training & testing data
+# acquire the dataset and split it into testing & training
+dataset, metadata = tfds.load('fashion_mnist', as_supervised=True, with_info=True) 
+train_ds, test_ds = dataset['train'], dataset['test'] 
 
 class_names = metadata.features['label'].names # store these labels for future use at the output of the model
+
+# store how many training & testing examples there are in variables
+num_train_examples = metadata.splits['train'].num_examples
+num_test_examples = metadata.splits['test'].num_examples
 
 def normalize(images, labels): 
     images = tf.cast(images, tf.float32) # change datatype
@@ -28,9 +33,9 @@ test_ds.map(normalize)
 
 # images are loaded from the disk when the dataset is first use. 
 # Caching them stores them in memory so that subsequent epochs can run without loading them again
-
-# train_ds = train_ds.cache()
-# test_ds = test_ds.cache()
+# comment out the caching for git commits 
+train_ds = train_ds.cache()
+test_ds = test_ds.cache()
 
 # exploration: plot 25 images along with their labels
 plt.figure(figsize=(10, 10))
@@ -44,3 +49,35 @@ for i, (image, label) in enumerate(test_ds.take(25)):
     plt.xlabel(class_names[label])
 plt.show()
 
+# ============== the model =========================
+# assemble layers
+model = tf.keras.Sequential([
+    tf.keras.layers.Flatten(input_shape=(28, 28, 1)), # vectorize the input image
+    tf.keras.layers.Dense(128, activation=tf.nn.relu), # one hidden layer of 128 nodes with rectified linear unit activation
+    tf.keras.layers.Dense(10, # output layer has exactly enough nodes for the possible outcomes. 
+                            activation=tf.nn.softmax) # softmax ensures the output emerges as a probability distribution
+])
+
+# compile the model
+model.compile(
+    loss=tf.keras.losses.SparseCategoricalCrossentropy(), # measures crossentropy loss between labels and predictions
+    optimizer='adam', # method for reducing loss
+    metrics=['accuracy']
+    )
+
+# train the model
+BATCH_SIZE = 32
+train_ds = train_ds.cache().repeat().shuffle(num_train_examples).batch(BATCH_SIZE)
+test_ds = test_ds.cache().batch(BATCH_SIZE)
+# repeat() - repeat forever, except as limited by epochs in fit method
+# shuffle(60000) - randomize the order as training enters a new epoch, so that the model doesn't learn anything from the order
+# batch(32) - tells model.fit() to use batches of 32 images and labels when adjusting model parameters
+
+# test the model
+model.fit(train_ds, 
+            epochs=5, # how many iterations to train through
+            steps_per_epoch=math.ceil(num_train_examples / BATCH_SIZE) # how many batches to use in one epoch
+        )
+
+test_loss, test_accuracy = model.evaluate(test_ds, steps=math.ceil(num_test_examples / BATCH_SIZE))
+print('Accuracy on test dataset:', test_accuracy)
