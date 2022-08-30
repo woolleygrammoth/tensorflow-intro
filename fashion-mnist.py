@@ -33,21 +33,20 @@ test_ds.map(normalize)
 
 # images are loaded from the disk when the dataset is first use. 
 # Caching them stores them in memory so that subsequent epochs can run without loading them again
-# comment out the caching for git commits 
 train_ds = train_ds.cache()
 test_ds = test_ds.cache()
 
-# exploration: plot 25 images along with their labels
-plt.figure(figsize=(10, 10))
-for i, (image, label) in enumerate(test_ds.take(25)): 
-    image = image.numpy().reshape(28, 28)
-    plt.subplot(5, 5, i+1)
-    plt.xticks([])
-    plt.yticks([])
-    plt.grid(False)
-    plt.imshow(image, cmap=plt.cm.binary)
-    plt.xlabel(class_names[label])
-plt.show()
+# # exploration: plot 25 images along with their labels
+# plt.figure(figsize=(10, 10))
+# for i, (image, label) in enumerate(test_ds.take(25)): 
+#     image = image.numpy().reshape(28, 28)
+#     plt.subplot(5, 5, i+1)
+#     plt.xticks([])
+#     plt.yticks([])
+#     plt.grid(False)
+#     plt.imshow(image, cmap=plt.cm.binary)
+#     plt.xlabel(class_names[label])
+# plt.show()
 
 # ============== the model =========================
 # assemble layers
@@ -81,3 +80,22 @@ model.fit(train_ds,
 
 test_loss, test_accuracy = model.evaluate(test_ds, steps=math.ceil(num_test_examples / BATCH_SIZE))
 print('Accuracy on test dataset:', test_accuracy)
+
+# make predictions and explore
+for test_images, test_labels in test_ds.take(1): 
+    test_images, test_labels = test_images.numpy(), test_labels.numpy()
+    predictions = model.predict(test_images)
+
+print(np.argmax("predicted: ", predictions[0]))
+print("actual: ", test_labels[0])
+
+
+# notes: 
+#   the number of epochs matters a lot when it's low. 1 epoch yields a much lower accuracy. 
+# But once we get above 5, the improvement diminishes. 
+#   Same thing with the number of nodes in our Dense layer. 512 is only a little bit better than 256. 
+#   When we don't normalize the pixel values, there doesn't seem to be much difference... not sure why yet. 
+#   A second Dense layer performs best at 64 neurons. 
+# 10 neurons makes it perform very poorly, and above 128 the performance drops a little bit. 
+#   Still not sure what ReLU accomplishes. 
+# Adding extra layers and playing around with the neurons in each makes a marginal difference in accuracy. 
