@@ -1,0 +1,16 @@
+Fashion MNIST: 
+    the number of epochs matters a lot when it's low. 1 epoch yields a much lower accuracy. 
+But once we get above 5, the improvement diminishes. 
+    Same thing with the number of nodes in our Dense layer. 512 is only a little bit better than 256. 
+    When we don't normalize the pixel values, there doesn't seem to be much difference... not sure why yet. 
+    A second Dense layer performs best at 64 neurons. 
+10 neurons makes it perform very poorly, and above 128 the performance drops a little bit. 
+    Still not sure what ReLU accomplishes. 
+Adding extra layers and playing around with the neurons in each makes a marginal difference in accuracy. 
+
+General: 
+    REGRESSION problems output a single number 
+        (i.e. temperature on a given day, value of a house given various things, price of electricity at time t). 
+    CLASSIFICATION problems output a series of numbers defining a probability distribution, 
+        indicating the model's confidence in the various outcomes. 
+    

@@ -90,12 +90,3 @@ print(np.argmax("predicted: ", predictions[0]))
 print("actual: ", test_labels[0])
 
 
-# notes: 
-#   the number of epochs matters a lot when it's low. 1 epoch yields a much lower accuracy. 
-# But once we get above 5, the improvement diminishes. 
-#   Same thing with the number of nodes in our Dense layer. 512 is only a little bit better than 256. 
-#   When we don't normalize the pixel values, there doesn't seem to be much difference... not sure why yet. 
-#   A second Dense layer performs best at 64 neurons. 
-# 10 neurons makes it perform very poorly, and above 128 the performance drops a little bit. 
-#   Still not sure what ReLU accomplishes. 
-# Adding extra layers and playing around with the neurons in each makes a marginal difference in accuracy. 
